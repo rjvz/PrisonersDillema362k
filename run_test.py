@@ -60,7 +60,6 @@ def start_round_text():
     else:
         print()
         print("Please input the type of behavior you would like for Prisoner 2.")
-        print(options())
         p2_string = input("What behavior would you like to use? (No space please): ")
         p2_x = convert_int(p2_string)
         p2_behav = check_val(p2_x)
