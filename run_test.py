@@ -45,6 +45,7 @@ def prisoners_dilemma(p1, p2):
     p2.set_group_years(p1)
 
 
+# Gets a round started.
 def start_round_text():
 
     print("Welcome to 'The Prisoner Dilemma!'")
@@ -58,15 +59,19 @@ def start_round_text():
     if p1_behav == 9:
         return res
     else:
-        print()
+        print("")
         print("Please input the type of behavior you would like for Prisoner 2.")
         p2_string = input("What behavior would you like to use? (No space please): ")
         p2_x = convert_int(p2_string)
         p2_behav = check_val(p2_x)
         res.append(p2_behav)
+        num_round_str = input("How many rounds would you like to run? (1 - 1 Million recommended): ")
+        num_round = convert_int(num_round_str)
+        res.append(num_round)
         return res
 
 
+# List all of the options for a player.
 def options():
     print("Options:")
     print("Input 0 for 'Random' behavior")
@@ -79,9 +84,10 @@ def options():
     print("Input 7 for 'Whim vs Knowledge' behavior")
     print("Input 8 for 'Human Control'")
     print("Input 9 for default player settings.")
-    print()
+    print("")
 
 
+# Converts the string to a int value if possible else it prompts the user.
 def convert_int(str1):
     try:
         val = int(str1)
@@ -93,6 +99,7 @@ def convert_int(str1):
     return val
 
 
+# makes sure that the given val is between 0 and 9 for the behavior types.
 def check_val(val):
     if val >= 0 or val <= 9:
         return val
@@ -104,29 +111,44 @@ def check_val(val):
         return check_val(x_here)
 
 
-res_list = start_round_text()
-if res_list[0] == 9:
-    prisoner1 = Prisoner.Prisoner(random)
-    prisoner2 = Prisoner.Prisoner(best_for_self)
-else:
-    prisoner1 = Prisoner.Prisoner(res_list[0])
-    prisoner2 = Prisoner.Prisoner(res_list[1])
+# This method allows for the game to actually play
+def play_game():
+    res_list = start_round_text()
+    if res_list[0] == 9:
+        prisoner1 = Prisoner.Prisoner(random)
+        prisoner2 = Prisoner.Prisoner(best_for_self)
+        num_rounds = 100
+    else:
+        prisoner1 = Prisoner.Prisoner(res_list[0])
+        prisoner2 = Prisoner.Prisoner(res_list[1])
+        num_rounds = res_list[2]
+
+    for x in range(num_rounds):
+        prisoner1.set_decision()
+        prisoner2.set_decision()
+        prisoners_dilemma(prisoner1, prisoner2)
+        p1_round_decision = prisoner1.get_prev_decision()
+        if p1_round_decision == 1:
+            p1_round_decision = "Talked"
+        else:
+            p1_round_decision = "Silent"
+        p2_round_decision = prisoner2.get_prev_decision()
+        if p2_round_decision == 1:
+            p2_round_decision = "Talked"
+        else:
+            p2_round_decision = "Silent"
+        print("")
+        print("Prisoner 1 Decision: ", p1_round_decision, "Prisoner 2 Decision: ", p2_round_decision)
+        print("Prisoner 1 total years: ", prisoner1.get_total_years(), "Prisoner 2 total years: ",
+              prisoner2.get_total_years())
+
+    cont = input("Would you like to continue? 'Y' for Yes anything else for no." )
+    if cont == 'Y' or cont == 'y':
+        play_game()
+    else:
+        print("Thanks for playing this game experiment. Comeback soon!")
 
 
-for x in range(100):
-    prisoner1.set_decision()
-    prisoner2.set_decision()
-    prisoners_dilemma(prisoner1, prisoner2)
-    p1_round_decision = prisoner1.get_prev_decision()
-    if p1_round_decision == 1:
-        p1_round_decision = "Talked"
-    else:
-        p1_round_decision = "Silent"
-    p2_round_decision = prisoner2.get_prev_decision()
-    if p2_round_decision == 1:
-        p2_round_decision = "Talked"
-    else:
-        p2_round_decision = "Silent"
-    print("")
-    print("Prisoner 1 Decision: ", p1_round_decision, "Prisoner 2 Decision: ", p2_round_decision)
-    print("Prisoner 1 total years: ", prisoner1.get_total_years(), "Prisoner 2 total years: ", prisoner2.get_total_years())
+# Start the game
+play_game()
+
